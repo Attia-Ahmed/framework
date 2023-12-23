@@ -173,7 +173,9 @@ class ControllerMakeCommand extends GeneratorCommand
         if (! class_exists($modelClass) && confirm("A {$modelClass} model does not exist. Do you want to generate it?", default: true)) {
             $this->call('make:model', ['name' => $modelClass]);
         }
-
+        if ($this->option('resource')) {
+            $this->generateResource($modelClass);
+        }
         $replace = $this->buildFormRequestReplacements($replace, $modelClass);
 
         return array_merge($replace, [
@@ -270,6 +272,23 @@ class ControllerMakeCommand extends GeneratorCommand
         ]);
 
         return [$storeRequestClass, $updateRequestClass];
+    }
+
+    /**
+     * Generate the resource for the given model and classes.
+     *
+     * @param  string  $modelClass
+     * @return string
+     */
+    protected function generateResource($modelClass)
+    {
+        $resourceClass = class_basename($modelClass).'Resource';
+
+        $this->call('make:resource', [
+            'name' => $resourceClass,
+        ]);
+
+        return $resourceClass;
     }
 
     /**
