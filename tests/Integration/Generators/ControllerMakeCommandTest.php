@@ -8,6 +8,7 @@ class ControllerMakeCommandTest extends TestCase
         'app/Http/Controllers/FooController.php',
         'app/Models/Bar.php',
         'app/Models/Foo.php',
+        'app/Http/Resources/FooResource.php',
         'tests/Feature/Http/Controllers/FooControllerTest.php',
     ];
 
@@ -165,5 +166,20 @@ class ControllerMakeCommandTest extends TestCase
 
         $this->assertFilenameExists('app/Http/Controllers/FooController.php');
         $this->assertFilenameExists('tests/Feature/Http/Controllers/FooControllerTest.php');
+    }
+
+    public function testItCanGenerateControllerFileWithResourceOptionTest()
+    {
+        $this->artisan('make:controller', [
+            'name' => 'FooController',
+            '--model' => 'Foo',
+            '--resource' => true,
+        ])
+            ->expectsQuestion('A App\Models\Foo model does not exist. Do you want to generate it?', true)
+            ->assertExitCode(0);
+
+        $this->assertFilenameExists('app/Http/Controllers/FooController.php');
+        $this->assertFilenameExists('app/Models/Foo.php');
+        $this->assertFilenameExists('app/Http/Resources/FooResource.php');
     }
 }
