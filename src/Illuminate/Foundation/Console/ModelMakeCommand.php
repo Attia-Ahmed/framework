@@ -142,7 +142,8 @@ class ModelMakeCommand extends GeneratorCommand
             'name' => "{$controller}Controller",
             '--model' => $this->option('resource') || $this->option('api') ? $modelName : null,
             '--api' => $this->option('api'),
-            '--requests' => $this->option('requests') || $this->option('all'),
+            '--requests' => $this->option('requests'),
+            '--resource' => $this->option('resource'),
             '--test' => $this->option('test'),
             '--pest' => $this->option('pest'),
         ]));
