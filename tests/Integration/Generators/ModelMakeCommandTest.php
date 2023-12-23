@@ -2,6 +2,8 @@
 
 namespace Illuminate\Tests\Integration\Generators;
 
+use Illuminate\Routing\Console\ControllerMakeCommand;
+
 class ModelMakeCommandTest extends TestCase
 {
     protected $files = [
@@ -12,6 +14,10 @@ class ModelMakeCommandTest extends TestCase
         'database/factories/FooFactory.php',
         'database/seeders/FooSeeder.php',
         'tests/Feature/Models/FooTest.php',
+        'app/Models/FooBoo.php',
+        'app/Http/Controllers/FooBooController.php',
+        'app/Http/Resources/FooBooResource.php',
+
     ];
 
     public function testItCanGenerateModelFile()
@@ -179,4 +185,40 @@ class ModelMakeCommandTest extends TestCase
         $this->assertFilenameNotExists('database/seeders/FooSeeder.php');
         $this->assertFilenameExists('tests/Feature/Models/FooTest.php');
     }
+
+    public function testItCanGenerateModelFileWithResourceOptionTest()
+    {
+        /**
+         * Workaround to ensure class_exists returns true. This is necessary because the model
+         * used in the test does not actually exist. The simulateModelExistence method creates
+         * a class alias to bypass this limitation during testing.
+         *
+         * @see ControllerMakeCommand::buildModelReplacements()
+         */
+        $this->simulateModelExistence('FooBoo');
+
+        $this->artisan('make:model', [
+            'name' => 'FooBoo',
+            '--resource' => true,
+        ])
+            ->assertExitCode(0);
+
+        $this->assertFilenameExists('app/Models/FooBoo.php');
+        $this->assertFilenameExists('app/Http/Controllers/FooBooController.php');
+        $this->assertFilenameExists('app/Http/Resources/FooBooResource.php');
+    }
+
+    /**
+     * Simulates the existence of a model class.
+     *
+     * @param  string  $modelName  The class name to simulate.
+     */
+    private function simulateModelExistence($modelName): void
+    {
+        class_alias(FakeClass::class, '\\App\\Models\\'.$modelName);
+    }
+}
+
+class FakeClass
+{
 }
