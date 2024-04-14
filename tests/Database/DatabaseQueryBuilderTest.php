@@ -1332,6 +1332,34 @@ class DatabaseQueryBuilderTest extends TestCase
             $query->where('last_name', 'test');
         }, 'test');
     }
+
+    public function testWhereNotNullOr()
+    {
+        $builder = $this->getBuilder();
+        $builder->select('*')->from('table');
+        $query = $builder->whereNotNullOr('name', 'test');
+        $expected = 'select * from "table" where ("name" is not null or "name" = ?)';
+        $this->assertEquals($expected, $query->toSql());
+    }
+    public function testWhereNotNullCallback()
+    {
+        $builder = $this->getBuilder();
+        $builder->select('*')->from('table');
+        $query = $builder->whereNotNullOr(['first_name','last_name'], function ($query) {
+            $query->where('name', 'test');
+        });
+        $expected = 'select * from "table" where ("first_name" is not null and "last_name" is not null or ("name" = ?))';
+        $this->assertEquals($expected, $query->toSql());
+    }
+    public function testWhereNotNullOrArray()
+    {
+        $builder = $this->getBuilder();
+        $builder->select('*')->from('table');
+        $query = $builder->whereNotNullOr(['width','height'], '<',100);
+        $expected = 'select * from "table" where ("width" is not null or "width" < ?) and ("height" is not null or "height" < ?)';
+        $this->assertEquals($expected, $query->toSql());
+    }
+
     public function testUnions()
     {
         $builder = $this->getBuilder();
