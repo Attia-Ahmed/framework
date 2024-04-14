@@ -1335,7 +1335,19 @@ class Builder implements BuilderContract
         }
         return $this;
     }
-
+    /**
+     * Add a "where not null or" clause to the query.
+     *
+     * @param  string|array|\Illuminate\Contracts\Database\Query\Expression  $columns
+     * @param  \Closure|string  $operator
+     * @param  mixed  $value
+     * @param  string  $boolean
+     * @return $this
+     */
+    public function whereNotNullOr($columns, $operator = null, $value = null, $boolean = 'and')
+    {
+        return $this->whereNullOr($columns, $operator, $value, $boolean, true);
+    }
     /**
      * Add a where between statement to the query.
      *
